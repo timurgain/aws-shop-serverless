@@ -1,16 +1,16 @@
 
-# Welcome to your CDK Python project!
+# Serverless AWS backend fro a shop
 
-This is a blank project for CDK development with Python.
+## Description
+Creating a serverless backend for a shop using AWS services. Study project at EPAM RS School.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Architecture
+The backend is built using the following AWS services:
+- API Gateway
+- Lambda
+- ...
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+## Run and Deploy on AWS
 
 To manually create a virtualenv on MacOS and Linux:
 
