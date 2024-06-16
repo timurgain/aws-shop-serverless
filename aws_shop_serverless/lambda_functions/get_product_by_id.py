@@ -3,7 +3,7 @@ import json
 
 def lambda_handler(event, context):
 
-    # 0. constants
+    # 0. Constants
 
     mock_production_list = [
         {"id": 1, "title": "Product 1", "color": "red", "price": 100},
@@ -18,7 +18,7 @@ def lambda_handler(event, context):
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
     }
 
-    # 1. get product ID
+    # 1. Get product ID
 
     try:
         product_id = int(event["pathParameters"]["product_id"])
@@ -29,12 +29,14 @@ def lambda_handler(event, context):
             "body": json.dumps({"error": "Invalid product ID type"}),
         }
 
-    # 2. get product by ID
-    
+    # 2. Get product by ID
+
     product = next(
         (product for product in mock_production_list if product["id"] == product_id),
         None,
     )
+
+    # 3. Response
 
     if product is None:
         return {

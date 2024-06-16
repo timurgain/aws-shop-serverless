@@ -1,13 +1,23 @@
 
-# Serverless AWS backend fro a shop
+# Serverless AWS backend for a shop
 
 ## Description
 Creating a serverless backend for a shop using AWS services. Study project at EPAM RS School.
+
+## API Documentation
+Use [Swagger Web](https://editor.swagger.io) to view the API documentation. Copy the content of the file `openapi.yaml` and paste it into the editor.
 
 ## Architecture
 The backend is built using the following AWS services:
 - API Gateway
 - Lambda
+- S3 Bucket
+- ...
+
+## Technologies
+- AWS CDK
+- Python
+- unittest
 - ...
 
 ## Run and Deploy on AWS

@@ -1,4 +1,4 @@
-production_list = [
+mock_production_list = [
     {
         "id": 1,
         "title": "Product 1",
