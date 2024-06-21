@@ -7,7 +7,8 @@ class DynamoDBStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         db.Table(
-            self, 'products',
+            self, 
+            id='products',
             partition_key=db.Attribute(
                 name='id',
                 type=db.AttributeType.STRING
@@ -19,7 +20,8 @@ class DynamoDBStack(Stack):
         )
 
         db.Table(
-            self, 'stocks',
+            self, 
+            id='stocks',
             partition_key=db.Attribute(
                 name='product_id',
                 type=db.AttributeType.STRING

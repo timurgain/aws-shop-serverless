@@ -25,7 +25,7 @@ app = cdk.App()
 
 DynamoDBStack(
     app,
-    construct_id="DynamoDBStack",
+    construct_id="Shop-DynamoDB-",
     env=cdk.Environment(**env)
 ) 
 
