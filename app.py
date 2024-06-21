@@ -3,10 +3,11 @@ import os
 
 import aws_cdk as cdk
 
+from aws_shop_serverless.dynamo_db_stack import DynamoDBStack
 from aws_shop_serverless.get_products_list_stack import GetProductsListStack
 from aws_shop_serverless.get_product_by_id_stack import GetProductByIdStack
 
-from aws_shop_serverless.api_gateway import APIGatewayStack
+from aws_shop_serverless.api_gateway_stack import APIGatewayStack
 
 # 0. set environment variables
 
@@ -20,7 +21,15 @@ env = {
 
 app = cdk.App()
 
-# 2. create Lambda stacks
+# 2. create DynamoDB stack
+
+DynamoDBStack(
+    app,
+    construct_id="DynamoDBStack",
+    env=cdk.Environment(**env)
+) 
+
+# 3. create Lambda stacks
 
 get_products_list_stack = GetProductsListStack(
     app,
@@ -34,7 +43,7 @@ get_product_by_id_stack = GetProductByIdStack(
     env=cdk.Environment(**env),
 )
 
-# 3. create API Gateway stack as a trigger for Lambdas
+# 4. create API Gateway stack as a trigger for Lambdas
 
 urls = [
     (
@@ -56,6 +65,6 @@ APIGatewayStack(
     method_url_lambdas=urls,
 )
 
-# 4. Generate AWS CloudFormation template
+# 5. Generate AWS CloudFormation template
 
 app.synth()

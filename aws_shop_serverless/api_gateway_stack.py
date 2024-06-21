@@ -19,12 +19,17 @@ class APIGatewayStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         default_lambda = method_url_lambdas[0][2]
+
+        # 1. Create APIGateway
+        
         api = apigateway.LambdaRestApi(
             self,
             id="ProductAPI",
             rest_api_name="Product API",
             handler=default_lambda,
         )
+
+        # 2. Bind http methods with lamdas within APIGateway
 
         resources = {}
         for method, url, lambda_function in method_url_lambdas:
