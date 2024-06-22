@@ -1,52 +1,49 @@
 import json
+import http
+from utils.serializers import DecimalEncoder
+from utils.constants import headers_safe_methods
+from utils.managers import join_product_stock
+from utils.dynamodb import initialize_dynamodb_tables
+from utils.errors import NotFoundError
 
 
 def lambda_handler(event, context):
-
-    # 0. Constants
-
-    mock_production_list = [
-        {"id": 1, "title": "Product 1", "color": "red", "price": 100},
-        {"id": 2, "title": "Product 2", "color": "blue", "price": 200},
-        {"id": 3, "title": "Product 3", "color": "green", "price": 300},
-    ]
-
-    headers = {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    }
-
-    # 1. Get product ID
+    """Get product by ID Lambda function handler."""
 
     try:
-        product_id = int(event["pathParameters"]["product_id"])
-    except (KeyError, ValueError):
+
+        # 0. Init
+
+        products_table, stocks_table = initialize_dynamodb_tables()
+
+        # 1. Get product by ID
+
+        product_id = event.get("pathParameters", {}).get("product_id")
+        product = products_table.get_item(Key={"id": product_id}).get("Item")
+        stocks = stocks_table.scan().get("Items", [])
+        if product is None:
+            raise NotFoundError("Product not found")
+        
+        joined_product_data = join_product_stock(product, stocks)
+
+        # 2. Response
+
         return {
-            "headers": headers,
-            "statusCode": 400,
-            "body": json.dumps({"error": "Invalid product ID type"}),
+            "headers": headers_safe_methods,
+            "statusCode": http.HTTPStatus.OK,
+            "body": json.dumps(joined_product_data, cls=DecimalEncoder),
         }
-
-    # 2. Get product by ID
-
-    product = next(
-        (product for product in mock_production_list if product["id"] == product_id),
-        None,
-    )
-
-    # 3. Response
-
-    if product is None:
+        
+    except NotFoundError as err:
         return {
-            "headers": headers,
-            "statusCode": 404,
-            "body": json.dumps({"error": "Product not found"}),
+            "headers": headers_safe_methods,
+            "statusCode": http.HTTPStatus.NOT_FOUND,
+            "body": json.dumps({"error": str(err)}),
         }
-    else:
+    
+    except Exception as err:
         return {
-            "headers": headers,
-            "statusCode": 200,
-            "body": json.dumps(product),
+            "headers": headers_safe_methods,
+            "statusCode": http.HTTPStatus.INTERNAL_SERVER_ERROR,
+            "body": json.dumps(str(err)),
         }

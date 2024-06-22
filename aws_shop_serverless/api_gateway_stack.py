@@ -1,3 +1,4 @@
+import logging
 from typing import List, Tuple
 from aws_cdk import (
     Stack,
@@ -5,6 +6,9 @@ from aws_cdk import (
     aws_lambda as _lambda,
 )
 from constructs import Construct
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class APIGatewayStack(Stack):
@@ -14,35 +18,41 @@ class APIGatewayStack(Stack):
         scope: Construct,
         construct_id: str,
         method_url_lambdas: List[Tuple[str, str, _lambda.Function]],
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        default_lambda = method_url_lambdas[0][2]
+        try:
+            default_lambda = method_url_lambdas[0][2]
 
-        # 1. Create APIGateway
-        
-        api = apigateway.LambdaRestApi(
-            self,
-            id="ProductAPI",
-            rest_api_name="Product API",
-            handler=default_lambda,
-        )
+            # 1. Create APIGateway
 
-        # 2. Bind http methods with lamdas within APIGateway
-
-        resources = {}
-        for method, url, lambda_function in method_url_lambdas:
-            parts = url.split("/")  # ['products','{product_id}']
-
-            for i in range(len(parts)):
-                path = '/'.join(parts[:i+1])
-                if path not in resources:
-                    parent_path = '/'.join(parts[:i])
-                    parent_resource = resources.get(parent_path, api.root)
-                    resources[path] = parent_resource.add_resource(parts[i])
-            
-            resource = resources[url]
-            resource.add_method(
-                method, integration=apigateway.LambdaIntegration(lambda_function)
+            api = apigateway.LambdaRestApi(
+                self,
+                id="ProductAPI",
+                rest_api_name="Product API",
+                handler=default_lambda,
             )
+
+            # 2. Bind http methods with lamdas within APIGateway
+
+            resources = {}
+            for method, url, lambda_function in method_url_lambdas:
+                parts = url.split("/")  # ['products','{product_id}']
+
+                for i in range(len(parts)):
+                    path = "/".join(parts[: i + 1])
+                    if path not in resources:
+                        parent_path = "/".join(parts[:i])
+                        parent_resource = resources.get(parent_path, api.root)
+                        resources[path] = parent_resource.add_resource(parts[i])
+
+                resource = resources[url]
+                resource.add_method(
+                    method, integration=apigateway.LambdaIntegration(lambda_function)
+                )
+
+            logger.info("APIGatewayStack created successfully")
+
+        except Exception as err:
+            logger.error(f"Error in APIGatewayStack: {err}")

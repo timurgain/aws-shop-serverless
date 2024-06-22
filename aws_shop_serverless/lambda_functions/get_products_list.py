@@ -1,21 +1,18 @@
-import os
 import json
-import boto3
+import http
 from utils.serializers import DecimalEncoder
 from utils.constants import headers_safe_methods
 from utils.managers import join_product_stock
+from utils.dynamodb import initialize_dynamodb_tables
 
 
 def lambda_handler(event, context):
+    """Get products list Lambda function handler."""
+    
     try:
         # 0. Init
 
-        product_table_name = os.environ.get("PRODUCTS_TABLE_NAME")
-        stocks_table_name = os.environ.get("STOCKS_TABLE_NAME")
-
-        dynamodb = boto3.resource("dynamodb")
-        products_table = dynamodb.Table(product_table_name)
-        stocks_table = dynamodb.Table(stocks_table_name)
+        products_table, stocks_table = initialize_dynamodb_tables()
 
         # 1. Get all products and stocks
 
@@ -29,13 +26,13 @@ def lambda_handler(event, context):
 
         return {
             "headers": headers_safe_methods,
-            "statusCode": 200,
+            "statusCode": http.HTTPStatus.OK,
             "body": json.dumps(joined_products_data, cls=DecimalEncoder),
         }
 
     except Exception as err:
         return {
             "headers": headers_safe_methods,
-            "statusCode": 500,
+            "statusCode": http.HTTPStatus.INTERNAL_SERVER_ERROR,
             "body": json.dumps(str(err)),
         }
