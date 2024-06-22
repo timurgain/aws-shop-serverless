@@ -6,7 +6,7 @@ class DynamoDBStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        db.Table(
+        self.products_table = db.Table(
             self, 
             id='products',
             partition_key=db.Attribute(
@@ -19,7 +19,7 @@ class DynamoDBStack(Stack):
             write_capacity=5,
         )
 
-        db.Table(
+        self.stocks_table = db.Table(
             self, 
             id='stocks',
             partition_key=db.Attribute(

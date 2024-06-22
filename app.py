@@ -23,7 +23,7 @@ app = cdk.App()
 
 # 2. create DynamoDB stack
 
-DynamoDBStack(
+dynamodb_stack = DynamoDBStack(
     app,
     construct_id="Shop-DynamoDB-",
     env=cdk.Environment(**env)
@@ -34,12 +34,14 @@ DynamoDBStack(
 get_products_list_stack = GetProductsListStack(
     app,
     construct_id="GetProductsListStack",
+    dynamodb_stack=dynamodb_stack,
     env=cdk.Environment(**env),
 )
 
 get_product_by_id_stack = GetProductByIdStack(
     app,
     construct_id="GetProductByIdStack",
+    dynamodb_stack=dynamodb_stack,
     env=cdk.Environment(**env),
 )
 

@@ -7,7 +7,7 @@ from constructs import Construct
 
 class GetProductByIdStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, dynamodb_stack: Stack, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         self.get_product_by_id = _lambda.Function(
@@ -16,4 +16,8 @@ class GetProductByIdStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_11,
             code=_lambda.Code.from_asset("aws_shop_serverless/lambda_functions"),
             handler="get_product_by_id.lambda_handler",
+            environment={
+                "PRODUCTS_TABLE_NAME": dynamodb_stack.products_table.table_name,
+                "STOCKS_TABLE_NAME": dynamodb_stack.stocks_table.table_name
+            },
         )

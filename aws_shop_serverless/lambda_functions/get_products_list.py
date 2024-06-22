@@ -1,25 +1,41 @@
+import os
 import json
+import boto3
+from utils.serializers import DecimalEncoder
+from utils.constants import headers_safe_methods
+from utils.managers import join_product_stock
 
 
 def lambda_handler(event, context):
+    try:
+        # 0. Init
 
-    # 0. constants
+        product_table_name = os.environ.get("PRODUCTS_TABLE_NAME")
+        stocks_table_name = os.environ.get("STOCKS_TABLE_NAME")
 
-    mock_production_list = [
-        {"id": 1, "title": "Product 1", "color": "red", "price": 100},
-        {"id": 2, "title": "Product 2", "color": "blue", "price": 200},
-        {"id": 3, "title": "Product 3", "color": "green", "price": 300},
-    ]
+        dynamodb = boto3.resource("dynamodb")
+        products_table = dynamodb.Table(product_table_name)
+        stocks_table = dynamodb.Table(stocks_table_name)
 
-    # 1. response
+        # 1. Get all products and stocks
 
-    return {
-        "headers": {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        },
-        "statusCode": 200,
-        "body": json.dumps(mock_production_list),
-    }
+        products = products_table.scan().get("Items", [])
+        stocks = stocks_table.scan().get("Items", [])
+        joined_products_data = [
+            join_product_stock(product, stocks) for product in products
+        ]
+
+        # 2. response
+
+        return {
+            "headers": headers_safe_methods,
+            "statusCode": 200,
+            "body": json.dumps(joined_products_data, cls=DecimalEncoder),
+        }
+
+    except Exception as err:
+        return {
+            "headers": headers_safe_methods,
+            "statusCode": 500,
+            "body": json.dumps(str(err)),
+        }
