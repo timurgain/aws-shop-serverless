@@ -6,6 +6,7 @@ import aws_cdk as cdk
 from aws_shop_serverless.dynamo_db_stack import DynamoDBStack
 from aws_shop_serverless.get_products_list_stack import GetProductsListStack
 from aws_shop_serverless.get_product_by_id_stack import GetProductByIdStack
+from aws_shop_serverless.create_product_stack import CreateProductStack
 
 from aws_shop_serverless.api_gateway_stack import APIGatewayStack
 
@@ -45,6 +46,13 @@ get_product_by_id_stack = GetProductByIdStack(
     env=cdk.Environment(**env),
 )
 
+create_product_stack = CreateProductStack(
+    app,
+    construct_id="CreateProductStack",
+    dynamodb_stack=dynamodb_stack,
+    env=cdk.Environment(**env),
+)
+
 # 4. create API Gateway stack as a trigger for Lambdas
 
 urls = [
@@ -57,6 +65,11 @@ urls = [
         "GET",
         "products/{product_id}",
         get_product_by_id_stack.get_product_by_id,
+    ),
+    (
+        "POST",
+        "products",
+        create_product_stack.create_product,
     ),
 ]
 

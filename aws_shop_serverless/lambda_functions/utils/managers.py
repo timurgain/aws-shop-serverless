@@ -1,4 +1,4 @@
-def join_product_stock(product, stocks):
+def join_product_stock(product: dict, stocks: list) -> dict:
     return {
         **product,
         "count": next(
