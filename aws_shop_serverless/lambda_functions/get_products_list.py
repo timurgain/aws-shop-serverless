@@ -4,10 +4,12 @@ from utils.serializers import DecimalEncoder
 from utils.constants import headers_safe_methods
 from utils.managers import join_product_stock
 from utils.dynamodb import initialize_dynamodb_tables
+from utils.logging import log_request
 
 
 def lambda_handler(event, context):
     """Get products list Lambda function handler."""
+    log_request(event)
     
     try:
         # 0. Init

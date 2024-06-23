@@ -5,11 +5,13 @@ from decimal import Decimal
 from utils.constants import headers_mutating_methods
 from utils.dynamodb import initialize_dynamodb_tables
 from utils.managers import join_product_stock
+from utils.logging import log_request
 from utils.errors import BadRequestError
 
 
 def lambda_handler(event, context):
     """Create product Lambda function handler."""
+    log_request(event)
 
     try:
         # 0. Init
