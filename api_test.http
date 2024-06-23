@@ -14,10 +14,10 @@ POST https://gkceqdno3g.execute-api.eu-north-1.amazonaws.com/prod/products/ HTTP
 Content-Type: application/json
 
 {
-  "title": "TM Test Car",
+  "title": "TM Test Car 2",
   "description": "Car description",
   "price": 197,
-  "count": "vtrv"
+  "count": 4
 }
 
 ###
