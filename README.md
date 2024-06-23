@@ -11,6 +11,7 @@ Use [Swagger Web](https://editor.swagger.io) to view the API documentation. Copy
 The backend is built using the following AWS services:
 - API Gateway
 - Lambda
+- DynamoDB
 - S3 Bucket
 - ...
 
