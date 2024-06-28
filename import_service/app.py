@@ -3,26 +3,27 @@ import os
 
 import aws_cdk as cdk
 
-from import_service.import_service_stack import ImportServiceStack
+from import_service.s3_bucket_stack import S3BucketStack
 
+# 0. set environment variables
+
+env = {
+    "account": "730335652080",
+    "region": "eu-north-1",
+}
+
+# 1. initialize the cdk app
 
 app = cdk.App()
-ImportServiceStack(app, "ImportServiceStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
+# 2. create S3 Bucket stack
 
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
+s3_bucket_stack = S3BucketStack(
+    app,
+    construct_id="TM-Shop-Import-Service-S3-Bucket",
+    env=cdk.Environment(**env),
+)
 
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
-
-    #env=cdk.Environment(account='123456789012', region='us-east-1'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
+# 3. Generate AWS CloudFormation template
 
 app.synth()
