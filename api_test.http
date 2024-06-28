@@ -1,0 +1,23 @@
+###
+
+GET https://gkceqdno3g.execute-api.eu-north-1.amazonaws.com/prod/products HTTP/1.1
+Content-Type: application/json
+
+###
+
+GET https://gkceqdno3g.execute-api.eu-north-1.amazonaws.com/prod/products/5b047845-8e51-4b67-b2b9-60dd0d051562 HTTP/1.1
+Content-Type: application/json
+
+###
+
+POST https://gkceqdno3g.execute-api.eu-north-1.amazonaws.com/prod/products/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "TM Test Car 2",
+  "description": "Car description",
+  "price": 197,
+  "count": 4
+}
+
+###

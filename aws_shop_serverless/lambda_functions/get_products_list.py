@@ -1,25 +1,40 @@
 import json
+import http
+from utils.serializers import DecimalEncoder
+from utils.constants import headers_safe_methods
+from utils.managers import join_product_stock
+from utils.dynamodb import initialize_dynamodb_tables
+from utils.logging import log_request
 
 
 def lambda_handler(event, context):
+    """Get products list Lambda function handler."""
+    log_request(event)
+    
+    try:
+        # 0. Init
 
-    # 0. constants
+        products_table, stocks_table = initialize_dynamodb_tables()
 
-    mock_production_list = [
-        {"id": 1, "title": "Product 1", "color": "red", "price": 100},
-        {"id": 2, "title": "Product 2", "color": "blue", "price": 200},
-        {"id": 3, "title": "Product 3", "color": "green", "price": 300},
-    ]
+        # 1. Get all products and stocks
 
-    # 1. response
+        products = products_table.scan().get("Items", [])
+        stocks = stocks_table.scan().get("Items", [])
+        joined_products_data = [
+            join_product_stock(product, stocks) for product in products
+        ]
 
-    return {
-        "headers": {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        },
-        "statusCode": 200,
-        "body": json.dumps(mock_production_list),
-    }
+        # 2. response
+
+        return {
+            "headers": headers_safe_methods,
+            "statusCode": http.HTTPStatus.OK,
+            "body": json.dumps(joined_products_data, cls=DecimalEncoder),
+        }
+
+    except Exception as err:
+        return {
+            "headers": headers_safe_methods,
+            "statusCode": http.HTTPStatus.INTERNAL_SERVER_ERROR,
+            "body": json.dumps(str(err)),
+        }

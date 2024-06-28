@@ -11,6 +11,7 @@ Use [Swagger Web](https://editor.swagger.io) to view the API documentation. Copy
 The backend is built using the following AWS services:
 - API Gateway
 - Lambda
+- DynamoDB
 - S3 Bucket
 - ...
 
@@ -57,7 +58,7 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
-## Useful commands
+## CDK commands
 
  * `cdk ls`          list all stacks in the app
  * `cdk synth`       emits the synthesized CloudFormation template
