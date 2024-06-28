@@ -2,13 +2,13 @@
 import os
 
 import aws_cdk as cdk
+from product_service.dynamo_db_stack import DynamoDBStack
+from product_service.dynamo_db_stack import DynamoDBStack
+from product_service.get_products_list_stack import GetProductsListStack
+from product_service.get_product_by_id_stack import GetProductByIdStack
+from product_service.create_product_stack import CreateProductStack
 
-from aws_shop_serverless.dynamo_db_stack import DynamoDBStack
-from aws_shop_serverless.get_products_list_stack import GetProductsListStack
-from aws_shop_serverless.get_product_by_id_stack import GetProductByIdStack
-from aws_shop_serverless.create_product_stack import CreateProductStack
-
-from aws_shop_serverless.api_gateway_stack import APIGatewayStack
+from product_service.api_gateway_stack import APIGatewayStack
 
 # 0. set environment variables
 
