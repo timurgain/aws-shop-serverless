@@ -41,7 +41,7 @@ import_products_file_stack = ImportProductsFileStack(
 
 urls = [
     (
-        "POST",
+        "GET",
         "import",
         import_products_file_stack.import_products_file,
     ),

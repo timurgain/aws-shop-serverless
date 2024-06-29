@@ -21,6 +21,7 @@ class S3BucketStack(Stack):
                 bucket_name="tm-shop-import-service-bucket",
                 removal_policy=RemovalPolicy.DESTROY,
             )
+
             logger.info("S3BucketStack created successfully")    
 
         except Exception as err:

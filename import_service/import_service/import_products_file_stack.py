@@ -42,8 +42,11 @@ class ImportProductsFileStack(Stack):
                 code=_lambda.Code.from_asset("import_service/lambda_functions"),
                 handler="import_products_file.lambda_handler",
                 role=lambda_role,
+                environment={
+                    "BUCKET_NAME": s3_bucket_stack.bucket.bucket_name,
+                },
             )
-            
+
             logger.info("ImportProductsFileStack created successfully")
 
         except Exception as err:
