@@ -14,8 +14,8 @@ def populate_dynamodb():
     # 0. Init
 
     dynamodb = boto3.resource('dynamodb', region_name='eu-north-1')
-    products_table = dynamodb.Table('Shop-DynamoDB-products606FDFD3-4IPWZL37HDP5')
-    stocks_table = dynamodb.Table('Shop-DynamoDB-stocks999A5704-R9JRMBF24P5O')
+    products_table = dynamodb.Table('Shop-DynamoDB-products606FDFD3-121663T88JT6V')
+    stocks_table = dynamodb.Table('Shop-DynamoDB-stocks999A5704-1Q9SRX76SVUH')
     fake = Faker()
     fake.add_provider(VehicleProvider)
 

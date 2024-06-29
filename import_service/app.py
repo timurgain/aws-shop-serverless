@@ -5,6 +5,7 @@ import aws_cdk as cdk
 
 from import_service.s3_bucket_stack import S3BucketStack
 from import_service.import_products_file_stack import ImportProductsFileStack
+from import_service.import_file_parser_stack import ImportFileParserStack
 
 from import_service.api_gateway_stack import APIGatewayImportFileStack
 
@@ -33,6 +34,13 @@ s3_bucket_stack = S3BucketStack(
 import_products_file_stack = ImportProductsFileStack(
     app,
     construct_id="ImportProductsFileStack",
+    s3_bucket_stack=s3_bucket_stack,
+    env=cdk.Environment(**env),
+)
+
+import_file_parser_stack = ImportFileParserStack(
+    app,
+    construct_id="ImportFileParserStack",
     s3_bucket_stack=s3_bucket_stack,
     env=cdk.Environment(**env),
 )
