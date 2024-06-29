@@ -6,7 +6,7 @@ import aws_cdk as cdk
 from import_service.s3_bucket_stack import S3BucketStack
 from import_service.import_products_file_stack import ImportProductsFileStack
 
-from import_service.api_gateway_stack import APIGatewayStack
+from import_service.api_gateway_stack import APIGatewayImportFileStack
 
 
 # 0. set environment variables
@@ -47,9 +47,9 @@ urls = [
     ),
 ]
 
-APIGatewayStack(
+APIGatewayImportFileStack(
     app,
-    construct_id="APIGatewayStack",
+    construct_id="APIGatewayImportFileStack",
     env=cdk.Environment(**env),
     method_url_lambdas=urls,
 )

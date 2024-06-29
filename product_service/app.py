@@ -8,7 +8,7 @@ from product_service.get_products_list_stack import GetProductsListStack
 from product_service.get_product_by_id_stack import GetProductByIdStack
 from product_service.create_product_stack import CreateProductStack
 
-from product_service.api_gateway_stack import APIGatewayStack
+from product_service.api_gateway_stack import APIGatewayProductStack
 
 # 0. set environment variables
 
@@ -73,9 +73,9 @@ urls = [
     ),
 ]
 
-APIGatewayStack(
+APIGatewayProductStack(
     app,
-    construct_id="APIGatewayStack",
+    construct_id="APIGatewayProductStack",
     env=cdk.Environment(**env),
     method_url_lambdas=urls,
 )

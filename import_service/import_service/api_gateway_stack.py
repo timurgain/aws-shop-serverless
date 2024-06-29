@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class APIGatewayStack(Stack):
+class APIGatewayImportFileStack(Stack):
 
     def __init__(
         self,
@@ -52,7 +52,7 @@ class APIGatewayStack(Stack):
                     method, integration=apigateway.LambdaIntegration(lambda_function)
                 )
 
-            logger.info("APIGatewayStack created successfully")
+            logger.info("APIGatewayImportFileStack created successfully")
 
         except Exception as err:
-            logger.error(f"Error in APIGatewayStack: {err}")
+            logger.error(f"Error in APIGatewayImportFileStack: {err}")

@@ -14,12 +14,30 @@ class S3BucketStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         try:
-            # 0. Create S3 Bucket
+            # 0. Define CORS rules
+            
+            cors_rules = [
+                s3.CorsRule(
+                    allowed_methods=[
+                        s3.HttpMethods.GET,
+                        s3.HttpMethods.PUT,
+                        s3.HttpMethods.POST,
+                        s3.HttpMethods.DELETE,
+                    ],
+                    allowed_origins=["*"],
+                    allowed_headers=["*"],
+                    max_age=3000,
+                )
+            ]
+
+            # 1. Create S3 Bucket
+
             self.bucket = s3.Bucket(
                 self,
                 id="TMShopImportServiceBucket",
                 bucket_name="tm-shop-import-service-bucket",
                 removal_policy=RemovalPolicy.DESTROY,
+                cors=cors_rules,                
             )
 
             logger.info("S3BucketStack created successfully")    

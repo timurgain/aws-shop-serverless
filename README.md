@@ -4,7 +4,7 @@
 ## Description
 Serverless microservice backend for a shop. Study project at EPAM RS School to learn AWS Cloud Development.  
 
-[CloudFront Frontend](https://d2lgf1k5v7ufib.cloudfront.net)
+[CloudFront Frontend](https://d3d84vku2q8obl.cloudfront.net)
 
 ## Architecture & Technologies
 The backend is built using the following AWS services:

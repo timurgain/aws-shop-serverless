@@ -34,7 +34,7 @@ def lambda_handler(event, context):
         return {
             "headers": headers_safe_methods,
             "statusCode": http.HTTPStatus.OK,
-            "body": json.dumps({"presigned_url": presigned_url}),
+            "body": json.dumps(presigned_url),
         }
 
     except BadRequestError as err:
