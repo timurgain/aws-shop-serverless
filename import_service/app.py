@@ -2,10 +2,9 @@
 import os
 
 import aws_cdk as cdk
+from aws_cdk.aws_lambda_event_sources import S3EventSource
 
-from import_service.s3_bucket_stack import S3BucketStack
-from import_service.import_products_file_stack import ImportProductsFileStack
-from import_service.import_file_parser_stack import ImportFileParserStack
+from import_service.import_products_file_stack import ImportShopProductsFileStack
 
 from import_service.api_gateway_stack import APIGatewayImportFileStack
 
@@ -21,37 +20,21 @@ env = {
 
 app = cdk.App()
 
-# 2. create S3 Bucket stack
+# 2. create S3 bucket and lambda stack
 
-s3_bucket_stack = S3BucketStack(
+import_service_stack = ImportShopProductsFileStack(
     app,
-    construct_id="TM-Shop-Import-Service-S3-Bucket",
+    construct_id="ImportShopProductsFileStack",
     env=cdk.Environment(**env),
 )
 
-# 3. create Lambda stacks
-
-import_products_file_stack = ImportProductsFileStack(
-    app,
-    construct_id="ImportProductsFileStack",
-    s3_bucket_stack=s3_bucket_stack,
-    env=cdk.Environment(**env),
-)
-
-import_file_parser_stack = ImportFileParserStack(
-    app,
-    construct_id="ImportFileParserStack",
-    s3_bucket_stack=s3_bucket_stack,
-    env=cdk.Environment(**env),
-)
-
-# 4. create API Gateway stack as a trigger for Lambdas
+# 3. create API Gateway stack as a trigger for the import_products_file lambda
 
 urls = [
     (
-        "GET",
+        "GET,OPTIONS,PUT,POST,DELETE",
         "import",
-        import_products_file_stack.import_products_file,
+        import_service_stack.import_products_file,
     ),
 ]
 
@@ -62,6 +45,6 @@ APIGatewayImportFileStack(
     method_url_lambdas=urls,
 )
 
-# 5. Generate AWS CloudFormation template
+# 6. Generate AWS CloudFormation template
 
 app.synth()

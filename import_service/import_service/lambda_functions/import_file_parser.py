@@ -4,6 +4,6 @@ def lambda_handler(event, context):
     parse it using csv-parser package and log each record to be shown in CloudWatch.
     """
     try:
-        pass
+        print("Event triggered by s3:ObjectCreated:* ", event)
     except Exception as err:
         pass
