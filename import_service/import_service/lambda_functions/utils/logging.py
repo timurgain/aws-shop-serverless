@@ -22,3 +22,7 @@ def log_request(event):
         
     except Exception as e:
         logger_request.error(f"Error logging request: {str(e)}")
+
+def log_info(message: str):
+    """Log info message"""
+    logger_request.info(message)
