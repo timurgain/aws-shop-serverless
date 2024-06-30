@@ -2,7 +2,7 @@ import boto3
 import csv
 import os
 
-from import_service.import_service.lambda_functions.utils.logging import log_info
+from utils.logging import log_info
 
 s3 = boto3.client("s3")
 
@@ -47,3 +47,7 @@ def lambda_handler(event, context):
     except Exception as err:
         log_info(f"Error parsing file: {str(err)}")
         raise err
+    
+    # finally:
+    #     s3.delete_object(Bucket=bucket_name, Key=file_key)
+        
