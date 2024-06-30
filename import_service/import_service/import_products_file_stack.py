@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_lambda as _lambda,
     RemovalPolicy,
     aws_s3 as s3,
+    aws_logs as logs,
 )
 from constructs import Construct
 from aws_cdk.aws_lambda_event_sources import S3EventSource
@@ -15,7 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class ImportShopProductsFileStack(Stack):
-
+    """United stack for s3 bucket and lambda functions to import shop products file.
+       Otherwise there is cyclic dependency."""
+    
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         try:
@@ -35,25 +38,57 @@ class ImportShopProductsFileStack(Stack):
                 )
             ]
 
-            lambda_role = iam.Role(
+            lambda_role_for_import_file = iam.Role(
                 self,
-                "LambdaExecutionRole",
+                "LambdaExecutionRoleImportFile",
                 assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             )
+
+            lambda_role_for_parse_file = iam.Role(
+                self,
+                "LambdaExecutionRoleParseFile",
+                assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            )
+
+            # Create CloudWatch log group
+
+            lambda_logs_import_file = logs.LogGroup(
+                self,
+                id="ImportFileLogGroup",
+                log_group_name="/aws/lambda/import_products_file",
+                removal_policy=RemovalPolicy.DESTROY,
+            )
+
+            lambda_logs_parse_file = logs.LogGroup(
+                self,
+                id="ParseFileLogGroup",
+                log_group_name="/aws/lambda/import_file_parser",
+                removal_policy=RemovalPolicy.DESTROY,
+            )
+
+            lambda_logs_import_file.grant_write(lambda_role_for_import_file)
+            lambda_logs_parse_file.grant_write(lambda_role_for_parse_file)
 
             # 1. Create S3 Bucket
 
             self.bucket = s3.Bucket(
                 self,
                 id="ShopImportServiceBucket",
-                bucket_name="tmshop-import-service-bucket",
+                bucket_name="tm-shop-import-service-bucket",
                 removal_policy=RemovalPolicy.DESTROY,
                 cors=cors_rules,
             )
 
             # 2. Attach the policy to the role
 
-            lambda_role.add_to_policy(
+            lambda_role_for_import_file.add_to_policy(
+                iam.PolicyStatement(
+                    actions=["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+                    resources=[f"{self.bucket.bucket_arn}/*"],
+                )
+            )
+
+            lambda_role_for_parse_file.add_to_policy(
                 iam.PolicyStatement(
                     actions=["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
                     resources=[f"{self.bucket.bucket_arn}/*"],
@@ -68,7 +103,7 @@ class ImportShopProductsFileStack(Stack):
                 runtime=_lambda.Runtime.PYTHON_3_11,
                 code=_lambda.Code.from_asset("import_service/lambda_functions"),
                 handler="import_products_file.lambda_handler",
-                role=lambda_role,
+                role=lambda_role_for_import_file,
                 environment={
                     "BUCKET_NAME": self.bucket.bucket_name,
                 },
@@ -80,7 +115,7 @@ class ImportShopProductsFileStack(Stack):
                 runtime=_lambda.Runtime.PYTHON_3_11,
                 code=_lambda.Code.from_asset("import_service/lambda_functions"),
                 handler="import_file_parser.lambda_handler",
-                role=lambda_role,
+                role=lambda_role_for_parse_file,
                 environment={
                     "BUCKET_NAME": self.bucket.bucket_name,
                 },

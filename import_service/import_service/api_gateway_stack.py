@@ -37,7 +37,7 @@ class APIGatewayImportFileStack(Stack):
             # 2. Bind http methods with lamdas within APIGateway
 
             resources = {}
-            for method, url, lambda_function in method_url_lambdas:
+            for methods, url, lambda_function in method_url_lambdas:
                 parts = url.split("/")  # ['products','{product_id}']
 
                 for i in range(len(parts)):
@@ -48,9 +48,11 @@ class APIGatewayImportFileStack(Stack):
                         resources[path] = parent_resource.add_resource(parts[i])
 
                 resource = resources[url]
-                resource.add_method(
-                    method, integration=apigateway.LambdaIntegration(lambda_function)
-                )
+                
+                for method in methods:
+                    resource.add_method(
+                        method, integration=apigateway.LambdaIntegration(lambda_function)
+                    )
 
             logger.info("APIGatewayImportFileStack created successfully")
 
