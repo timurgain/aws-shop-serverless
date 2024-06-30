@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError
 
 def get_products_table_name():
     """Get product table name from environment variables."""
-    product_table_name = os.environ.get("PRODUCTS_TABLE_NAME")
+    product_table_name = os.environ.get("PRODUCTS_TABLE_NAME", None)
     if not product_table_name:
         raise ValueError("Environment variable 'PRODUCTS_TABLE_NAME' not set")
     return product_table_name
@@ -13,7 +13,7 @@ def get_products_table_name():
 
 def get_stocks_table_name():
     """Get stock table name from environment variables."""
-    stocks_table_name = os.environ.get("STOCKS_TABLE_NAME")
+    stocks_table_name = os.environ.get("STOCKS_TABLE_NAME", None)
     if not stocks_table_name:
         raise ValueError("Environment variable 'STOCKS_TABLE_NAME' not set")
     return stocks_table_name

@@ -1,10 +1,10 @@
 # import aws_cdk as core
 # import aws_cdk.assertions as assertions
 
-# from aws_shop_serverless.get_products_list_stack import AwsShopServerlessStack
+# from product_service.get_products_list_stack import AwsShopServerlessStack
 
 # example tests. To run these tests, uncomment this file along with the example
-# resource in aws_shop_serverless/aws_shop_serverless_stack.py
+# resource in product_service/product_service_stack.py
 # def test_sqs_queue_created():
 #     app = core.App()
 #     stack = AwsShopServerlessStack(app, "aws-shop-serverless")

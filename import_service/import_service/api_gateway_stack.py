@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class APIGatewayStack(Stack):
+class APIGatewayImportFileStack(Stack):
 
     def __init__(
         self,
@@ -29,15 +29,15 @@ class APIGatewayStack(Stack):
 
             api = apigateway.LambdaRestApi(
                 self,
-                id="ProductAPI",
-                rest_api_name="Product API",
+                id="ImportAPI",
+                rest_api_name="Import API",
                 handler=default_lambda,
             )
 
             # 2. Bind http methods with lamdas within APIGateway
 
             resources = {}
-            for method, url, lambda_function in method_url_lambdas:
+            for methods, url, lambda_function in method_url_lambdas:
                 parts = url.split("/")  # ['products','{product_id}']
 
                 for i in range(len(parts)):
@@ -48,11 +48,13 @@ class APIGatewayStack(Stack):
                         resources[path] = parent_resource.add_resource(parts[i])
 
                 resource = resources[url]
-                resource.add_method(
-                    method, integration=apigateway.LambdaIntegration(lambda_function)
-                )
+                
+                for method in methods:
+                    resource.add_method(
+                        method, integration=apigateway.LambdaIntegration(lambda_function)
+                    )
 
-            logger.info("APIGatewayStack created successfully")
+            logger.info("APIGatewayImportFileStack created successfully")
 
         except Exception as err:
-            logger.error(f"Error in APIGatewayStack: {err}")
+            logger.error(f"Error in APIGatewayImportFileStack: {err}")

@@ -28,4 +28,3 @@ class TestGetProductsList(unittest.TestCase):
         body = json.loads(self.response.get("body"))
 
         self.assertEqual(body, mock_production_list)
-
