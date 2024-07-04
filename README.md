@@ -2,24 +2,23 @@
 # Serverless AWS backend for a shop
 
 ## Description
-Creating a serverless backend for a shop using AWS services. Study project at EPAM RS School.
+Serverless microservice backend for a shop. Study project at EPAM RS School to learn AWS Cloud Development.  
 
-## API Documentation
-Use [Swagger Web](https://editor.swagger.io) to view the API documentation. Copy the content of the file `openapi.yaml` and paste it into the editor.
+[CloudFront Frontend](https://d3d84vku2q8obl.cloudfront.net)
 
-## Architecture
+## Architecture & Technologies
 The backend is built using the following AWS services:
-- API Gateway
-- Lambda
-- DynamoDB
-- S3 Bucket
-- ...
-
-## Technologies
+- AWS API Gateway
+- AWS Lambda
+- AWS DynamoDB
+- AWS S3 Bucket
 - AWS CDK
 - Python
 - unittest
 - ...
+
+## API Documentation
+Use [Swagger Web](https://editor.swagger.io) to view the API documentation. Copy the content of the file `openapi.yaml` and paste it into the editor.
 
 ## Run and Deploy on AWS
 

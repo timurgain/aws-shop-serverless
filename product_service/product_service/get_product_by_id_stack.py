@@ -48,7 +48,7 @@ class GetProductByIdStack(Stack):
                 self,
                 id="GetProductById",
                 runtime=_lambda.Runtime.PYTHON_3_11,
-                code=_lambda.Code.from_asset("aws_shop_serverless/lambda_functions"),
+                code=_lambda.Code.from_asset("product_service/lambda_functions"),
                 handler="get_product_by_id.lambda_handler",
                 role=lambda_role,
                 environment={

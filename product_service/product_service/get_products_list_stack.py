@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class CreateProductStack(Stack):
+class GetProductsListStack(Stack):
 
     def __init__(
         self, scope: Construct, construct_id: str, dynamodb_stack: Stack, **kwargs
@@ -21,7 +21,6 @@ class CreateProductStack(Stack):
             raise ValueError("dynamodb_stack is required")
 
         try:
-
             # 0. Create the IAM role
 
             lambda_role = iam.Role(
@@ -34,12 +33,7 @@ class CreateProductStack(Stack):
 
             lambda_role.add_to_policy(
                 iam.PolicyStatement(
-                    actions=[
-                        "dynamodb:Scan",
-                        "dynamodb:GetItem",
-                        "dynamodb:Query",
-                        "dynamodb:PutItem",
-                    ],
+                    actions=["dynamodb:Scan", "dynamodb:GetItem", "dynamodb:Query"],
                     resources=[
                         dynamodb_stack.products_table.table_arn,
                         dynamodb_stack.stocks_table.table_arn,
@@ -49,20 +43,19 @@ class CreateProductStack(Stack):
 
             # 2. Create lambda stack
 
-            self.create_product = _lambda.Function(
+            self.get_products = _lambda.Function(
                 self,
-                id="CreateProduct",
+                id="GetProductsList",
                 runtime=_lambda.Runtime.PYTHON_3_11,
-                code=_lambda.Code.from_asset("aws_shop_serverless/lambda_functions"),
-                handler="create_product.lambda_handler",
+                code=_lambda.Code.from_asset("product_service/lambda_functions"),
+                handler="get_products_list.lambda_handler",
                 role=lambda_role,
                 environment={
                     "PRODUCTS_TABLE_NAME": dynamodb_stack.products_table.table_name,
                     "STOCKS_TABLE_NAME": dynamodb_stack.stocks_table.table_name,
                 },
             )
-
-            logger.info("CreateProductStack created successfully")
+            logger.info("GetProductsListStack created successfully")
 
         except Exception as err:
-            logger.error(f"Error in CreateProductStack: {err}")
+            logger.error(f"Error in GetProductsListStack: {err}")
