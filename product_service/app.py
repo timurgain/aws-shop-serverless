@@ -7,8 +7,9 @@ from product_service.dynamo_db_stack import DynamoDBStack
 from product_service.get_products_list_stack import GetProductsListStack
 from product_service.get_product_by_id_stack import GetProductByIdStack
 from product_service.create_product_stack import CreateProductStack
-
+from product_service.lambda_catalog_batch_process_stack import LambdaCatalogBatchProcessStack
 from product_service.api_gateway_stack import APIGatewayProductStack
+from product_service.sqs_stack import SQSStack
 
 # 0. set environment variables
 
@@ -16,7 +17,6 @@ env = {
     "account": "730335652080",
     "region": "eu-north-1",
 }
-
 
 # 1. initialize the cdk app
 
@@ -28,9 +28,17 @@ dynamodb_stack = DynamoDBStack(
     app,
     construct_id="Shop-DynamoDB-",
     env=cdk.Environment(**env)
-) 
+)
 
-# 3. create Lambda stacks
+# 3. create SQS stack
+
+sqs_stack = SQSStack(
+    app,
+    id="SQS-Stack",
+    env=cdk.Environment(**env),
+)
+
+# 4. create Lambda stacks
 
 get_products_list_stack = GetProductsListStack(
     app,
@@ -53,7 +61,15 @@ create_product_stack = CreateProductStack(
     env=cdk.Environment(**env),
 )
 
-# 4. create API Gateway stack as a trigger for Lambdas
+catalog_batch_process_stack = LambdaCatalogBatchProcessStack(
+    app,
+    construct_id="CatalogBatchProcessStack",
+    dynamodb_stack=dynamodb_stack,
+    sqs_stack=sqs_stack,
+    env=cdk.Environment(**env),
+)
+
+# 5. create API Gateway stack as a trigger for Lambdas
 
 urls = [
     (
@@ -76,10 +92,10 @@ urls = [
 APIGatewayProductStack(
     app,
     construct_id="APIGatewayProductStack",
-    env=cdk.Environment(**env),
     method_url_lambdas=urls,
+    env=cdk.Environment(**env),
 )
 
-# 5. Generate AWS CloudFormation template
+# 6. Generate AWS CloudFormation template
 
 app.synth()

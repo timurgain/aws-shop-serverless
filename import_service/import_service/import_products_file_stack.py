@@ -6,9 +6,9 @@ from aws_cdk import (
     RemovalPolicy,
     aws_s3 as s3,
     aws_logs as logs,
+    aws_lambda_event_sources as lambda_event_sources,
 )
 from constructs import Construct
-from aws_cdk.aws_lambda_event_sources import S3EventSource
 
 
 logging.basicConfig(level=logging.INFO)
@@ -124,7 +124,7 @@ class ImportShopProductsFileStack(Stack):
             # 4. Add S3 event as trigger to the import_file_parser lambda
 
             self.import_file_parser.add_event_source(
-                S3EventSource(
+                lambda_event_sources.S3EventSource(
                     bucket=self.bucket,
                     events=[s3.EventType.OBJECT_CREATED],
                     filters=[s3.NotificationKeyFilter(prefix="uploaded/")],

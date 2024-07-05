@@ -1,9 +1,9 @@
 import json
 import logging
 
-logger_request = logging.getLogger("product_service")
-logger_request.setLevel(logging.INFO)
-logger_request.addHandler(logging.StreamHandler())
+logger = logging.getLogger("product_service")
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
 
 
 def log_request(event):
@@ -16,13 +16,13 @@ def log_request(event):
         path_params = json.dumps(event.get("pathParameters", {}), indent=2)
         query_params = json.dumps(event.get("queryStringParameters", {}), indent=2)
 
-        logger_request.info(f"Request body: {body}")
-        logger_request.info(f"Request path params: {path_params}")
-        logger_request.info(f"Request query params: {query_params}")
+        logger.info(f"Request body: {body}")
+        logger.info(f"Request path params: {path_params}")
+        logger.info(f"Request query params: {query_params}")
         
     except Exception as e:
-        logger_request.error(f"Error logging request: {str(e)}")
+        logger.error(f"Error logging request: {str(e)}")
 
 def log_info(message: str):
     """Log info message"""
-    logger_request.info(message)
+    logger.info(message)
