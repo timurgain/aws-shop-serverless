@@ -3,8 +3,8 @@ import os
 import boto3
 from botocore.exceptions import ClientError
 
-from product_service.product_service.lambda_functions.utils.errors import (
-    BadRequestError,
+from utils.errors import (
+    BadRequestError
 )
 
 

@@ -2,7 +2,8 @@ import logging
 from aws_cdk import (
     Stack,
     aws_lambda as _lambda,
-    aws_lambda_event_sources as lambda_event_sources
+    aws_lambda_event_sources as lambda_event_sources,
+    aws_iam as iam,
 )
 from constructs import Construct
 
@@ -29,6 +30,7 @@ class LambdaCatalogBatchProcessStack(Stack):
                 environment={
                     "PRODUCTS_TABLE_NAME": dynamodb_stack.products_table.table_name,
                     "STOCKS_TABLE_NAME": dynamodb_stack.stocks_table.table_name,
+                    'SQS_QUEUE_NAME': 'catalog_items_queue'  # Hardcoded queue name from SQSStack that is created in an other app
                 },
             )
 
@@ -41,7 +43,13 @@ class LambdaCatalogBatchProcessStack(Stack):
                 )
             )
 
-            # 3. Grant read/write permissions to the lambda
+            # 3. SQS, grant consume permissions to the lambda
+
+            sqs_stack.catalog_items_queue.grant_consume_messages(
+                self.catalog_batch_process
+            )
+
+            # 3. DynamoDb, grant read/write permissions to the lambda
 
             dynamodb_stack.products_table.grant_read_write_data(
                 self.catalog_batch_process

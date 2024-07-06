@@ -9,12 +9,13 @@ from utils.errors import NotFoundError
 
 
 def lambda_handler(event, context):
-    """Get product by ID Lambda function handler."""
+    """Iterate SQS messages that contain product data, process them, and create products and stocks in DynamoDB."""
     log_request(event)
-    
+
     try:
-        pass
-        
-    
+        for message in event.get('Records', []):
+            message_body = json.loads(message['body'])
+            log_info(f"Message body: {message_body}") 
+
     except Exception as err:
         log_info(f"Error in catalog_batch_process: {err}")

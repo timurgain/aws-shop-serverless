@@ -1,3 +1,4 @@
+import json
 import boto3
 import csv
 import os
@@ -5,7 +6,8 @@ import os
 from utils.logging import log_info
 
 s3 = boto3.client("s3")
-
+sqs = boto3.client("sqs")
+sqs_queue_name = os.getenv('SQS_QUEUE_NAME')
 
 def lambda_handler(event, context):
     """
@@ -22,6 +24,12 @@ def lambda_handler(event, context):
                 f"File {file_key} is not processed. Expected .csv in the 'uploaded' folder."
             )
             return
+        
+        # 1. Get the SQS queue URL
+
+        log_info(f"SQS queue name: {sqs_queue_name}")
+
+        queue_url = sqs.get_queue_url(QueueName=sqs_queue_name).get("QueueUrl")
 
         # 1. Read the file row by row
 
@@ -30,7 +38,16 @@ def lambda_handler(event, context):
         reader = csv.reader(lines)
 
         for row in reader:
-            log_info(row)
+            devider = ';' if ';' in row[0] else ','
+            data = row[0].split(devider)
+            message = {
+                "title": data[0],
+                "description": data[1],
+                "price": data[2],
+                "count": data[3],
+            }
+            sqs.send_message(QueueUrl=queue_url, MessageBody=json.dumps(message))
+            log_info(f"Message sent to SQS: {message}")
 
         # 2. Move the file from 'uploaded' to 'parsed' folder
 

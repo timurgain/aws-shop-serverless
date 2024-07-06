@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_s3 as s3,
     aws_logs as logs,
     aws_lambda_event_sources as lambda_event_sources,
+    aws_sqs as sqs,
 )
 from constructs import Construct
 
@@ -17,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 class ImportShopProductsFileStack(Stack):
     """United stack for s3 bucket and lambda functions to import shop products file.
-       Otherwise there is cyclic dependency."""
-    
+    Otherwise there is cyclic dependency."""
+
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         try:
@@ -95,6 +96,14 @@ class ImportShopProductsFileStack(Stack):
                 )
             )
 
+            queue_arn = "arn:aws:sqs:eu-north-1:730335652080:catalog_items_queue"  # Hardcoded queue ARN from SQSStack that is created in the product_service app
+            lambda_role_for_parse_file.add_to_policy(
+                iam.PolicyStatement(
+                    actions=["sqs:SendMessage", "sqs:GetQueueUrl"],
+                    resources=[queue_arn],
+                )
+            )
+
             # 3. Create lambdas
 
             self.import_products_file = _lambda.Function(
@@ -118,6 +127,7 @@ class ImportShopProductsFileStack(Stack):
                 role=lambda_role_for_parse_file,
                 environment={
                     "BUCKET_NAME": self.bucket.bucket_name,
+                    "SQS_QUEUE_NAME": "catalog_items_queue",  # Hardcoded queue name from SQSStack that is created in the product_service app
                 },
             )
 
