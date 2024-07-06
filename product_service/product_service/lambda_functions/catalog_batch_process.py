@@ -4,6 +4,8 @@ import uuid
 import boto3
 from utils.dynamodb import execute_transact_write, prepare_product_stock_data
 from utils.logging import log_request, log_info
+# from product_service.product_service.lambda_functions.utils.dynamodb import execute_transact_write, prepare_product_stock_data
+# from product_service.product_service.lambda_functions.utils.logging import log_request, log_info
 
 
 sns_topic_arn = os.environ.get("SNS_TOPIC_ARN")

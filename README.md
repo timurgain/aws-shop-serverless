@@ -14,6 +14,7 @@ The backend is built using the following AWS services:
 - AWS DynamoDB
 - AWS S3 Bucket
 - AWS SQS
+- AWS SNS
 - AWS CloudFormation
 - AWS CDK
 - Python
