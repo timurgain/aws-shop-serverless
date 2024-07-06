@@ -10,6 +10,7 @@ from product_service.create_product_stack import CreateProductStack
 from product_service.lambda_catalog_batch_process_stack import LambdaCatalogBatchProcessStack
 from product_service.api_gateway_stack import APIGatewayProductStack
 from product_service.sqs_stack import SQSStack
+from product_service.sns_topic_stack import SNSTopicStack
 
 # 0. set environment variables
 
@@ -38,7 +39,15 @@ sqs_stack = SQSStack(
     env=cdk.Environment(**env),
 )
 
-# 4. create Lambda stacks
+# 4. create SNS stack
+
+sns_stack = SNSTopicStack(
+    app,
+    id="SNS-Stack",
+    env=cdk.Environment(**env),
+)
+
+# 5. create Lambda stacks
 
 get_products_list_stack = GetProductsListStack(
     app,
@@ -66,10 +75,11 @@ catalog_batch_process_stack = LambdaCatalogBatchProcessStack(
     construct_id="CatalogBatchProcessStack",
     dynamodb_stack=dynamodb_stack,
     sqs_stack=sqs_stack,
+    sns_stack=sns_stack,
     env=cdk.Environment(**env),
 )
 
-# 5. create API Gateway stack as a trigger for Lambdas
+# 6. create API Gateway stack as a trigger for Lambdas
 
 urls = [
     (
@@ -96,6 +106,6 @@ APIGatewayProductStack(
     env=cdk.Environment(**env),
 )
 
-# 6. Generate AWS CloudFormation template
+# 7. Generate AWS CloudFormation template
 
 app.synth()

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class LambdaCatalogBatchProcessStack(Stack):
 
     def __init__(
-        self, scope: Construct, construct_id: str, dynamodb_stack, sqs_stack, **kwargs
+        self, scope: Construct, construct_id: str, dynamodb_stack, sqs_stack, sns_stack, **kwargs
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -30,7 +30,8 @@ class LambdaCatalogBatchProcessStack(Stack):
                 environment={
                     "PRODUCTS_TABLE_NAME": dynamodb_stack.products_table.table_name,
                     "STOCKS_TABLE_NAME": dynamodb_stack.stocks_table.table_name,
-                    'SQS_QUEUE_NAME': 'catalog_items_queue'  # Hardcoded queue name from SQSStack that is created in an other app
+                    'SQS_QUEUE_NAME': 'catalog_items_queue',  # Hardcoded queue name from SQSStack that is created in an other app
+                    'SNS_TOPIC_ARN': sns_stack.create_product_topic.topic_arn,
                 },
             )
 
@@ -55,6 +56,12 @@ class LambdaCatalogBatchProcessStack(Stack):
                 self.catalog_batch_process
             )
             dynamodb_stack.stocks_table.grant_read_write_data(
+                self.catalog_batch_process
+            )
+
+            # 4. SNS, grant publish permissions to the lambda
+
+            sns_stack.create_product_topic.grant_publish(
                 self.catalog_batch_process
             )
 
