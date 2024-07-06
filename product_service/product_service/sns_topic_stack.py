@@ -17,10 +17,28 @@ class SNSTopicStack(Stack):
                 topic_name="createProductTopic"
             )
 
-            # 1. Email subscription
+            # 1. Email subscription with filter policy by price
 
             self.create_product_topic.add_subscription(
-                sns_subscr.EmailSubscription("timur.gain@gmail.com")
+                sns_subscr.EmailSubscription(
+                    "timur.gain@gmail.com",
+                    filter_policy={
+                        "price": sns.SubscriptionFilter.numeric_filter(
+                            less_than=100
+                        )
+                    }
+                )
+            )
+
+            self.create_product_topic.add_subscription(
+                sns_subscr.EmailSubscription(
+                    "timur.gain@yandex.ru",
+                    filter_policy={
+                        "price": sns.SubscriptionFilter.numeric_filter(
+                            greater_than_or_equal_to=100
+                        )
+                    }
+                )
             )
 
             logger.info("SNS Topic created successfully!")
