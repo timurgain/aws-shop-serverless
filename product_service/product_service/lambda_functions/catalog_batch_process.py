@@ -46,21 +46,20 @@ def lambda_handler(event, context):
 
             log_info(f"Processed message: {message_body}")
 
-        # 5. Publish message to SNS topic
+            # 5. Publish message to SNS topic
 
-        sns.publish(
-            TopicArn=sns_topic_arn,
-            Message=json.dumps(
-                {
-                    "message": f"Catalog batch process completed successfully, created {title}, price: {price}."
+            sns.publish(
+                TopicArn=sns_topic_arn,
+                Message=json.dumps(
+                    {
+                        "message": f"Catalog batch process completed successfully, created {title}, price: {price}."
+                    }
+                ),
+                MessageAttributes={
+                    "title": {"DataType": "String", "StringValue": title},
+                    "price": {"DataType": "Number", "StringValue": str(price)},
                 }
-            ),
-            MessageAttributes={
-                "title": {"DataType": "String", "StringValue": title},
-                "price": {"DataType": "Number", "StringValue": str(price)},
-            }
-            
-        )
+            )
 
     except Exception as err:
         log_info(f"Error in catalog_batch_process: {err}")
