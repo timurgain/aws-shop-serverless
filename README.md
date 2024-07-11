@@ -8,10 +8,14 @@ Serverless microservice backend for a shop. Study project at EPAM RS School to l
 
 ## Architecture & Technologies
 The backend is built using the following AWS services:
-- AWS API Gateway
+- AWS CloudFront
 - AWS Lambda
+- AWS API Gateway
 - AWS DynamoDB
 - AWS S3 Bucket
+- AWS SQS
+- AWS SNS
+- AWS CloudFormation
 - AWS CDK
 - Python
 - unittest
