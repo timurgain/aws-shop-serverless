@@ -1,6 +1,7 @@
 import logging
 from typing import List, Tuple
 from aws_cdk import (
+    Fn,
     Stack,
     aws_apigateway as apigateway,
     aws_lambda as _lambda,
@@ -23,9 +24,16 @@ class APIGatewayImportFileStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         try:
-            default_lambda = method_url_lambdas[0][2]
+            # 0. Import the lambda authorizer ARN and reference it
+
+            lambda_authorizer_arn = Fn.import_value("BasicAuthorizerLambdaArn")
+            lambda_authorizer = _lambda.Function.from_function_arn(
+                self, id="BasicAuthorizerLambda", function_arn=lambda_authorizer_arn
+            )
 
             # 1. Create APIGateway
+
+            default_lambda = method_url_lambdas[0][2]
 
             api = apigateway.LambdaRestApi(
                 self,
@@ -34,7 +42,16 @@ class APIGatewayImportFileStack(Stack):
                 handler=default_lambda,
             )
 
-            # 2. Bind http methods with lamdas within APIGateway
+            # 2. Create authorizer
+
+            authorizer = apigateway.TokenAuthorizer(
+                self,
+                id="Authorizer",
+                handler=lambda_authorizer,
+                identity_source=apigateway.IdentitySource.header("Authorization"),
+            )
+
+            # 3. Bind http methods with lamdas within APIGateway
 
             resources = {}
             for methods, url, lambda_function in method_url_lambdas:
@@ -48,10 +65,12 @@ class APIGatewayImportFileStack(Stack):
                         resources[path] = parent_resource.add_resource(parts[i])
 
                 resource = resources[url]
-                
+
                 for method in methods:
                     resource.add_method(
-                        method, integration=apigateway.LambdaIntegration(lambda_function)
+                        method,
+                        integration=apigateway.LambdaIntegration(lambda_function),
+                        authorizer=authorizer,
                     )
 
             logger.info("APIGatewayImportFileStack created successfully")
