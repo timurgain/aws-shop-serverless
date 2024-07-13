@@ -1,7 +1,9 @@
 import logging
 from aws_cdk import (
     CfnOutput,
+    Fn,
     aws_lambda as _lambda,
+    aws_iam as iam,
     Stack,
 )
 from constructs import Construct
@@ -18,7 +20,9 @@ class BasicAuthorizerStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         try:
-            # 0. Create a lambda function for the basic authorizer
+            # 0. Import environment variables
+
+            # 1. Create a lambda function for the basic authorizer
 
             self.basic_authorizer_lambda = _lambda.Function(
                 self,
@@ -29,7 +33,15 @@ class BasicAuthorizerStack(Stack):
                 environment=env_app,
             )
 
-            # 1. Export the lambda function ARN for other stacks
+            # 2. Add permission for API Gateway to invoke the Lambda function
+
+            self.basic_authorizer_lambda.add_permission(
+                id="APIGatewayInvoke",
+                principal=iam.ServicePrincipal("apigateway.amazonaws.com"),
+                action="lambda:InvokeFunction",
+            )
+
+            # 3. Export the lambda function ARN for other stacks
 
             CfnOutput(
                 self,

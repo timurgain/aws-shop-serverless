@@ -1,6 +1,7 @@
 import logging
 from typing import List, Tuple
 from aws_cdk import (
+    CfnOutput,
     Fn,
     Stack,
     aws_apigateway as apigateway,
@@ -73,6 +74,15 @@ class APIGatewayImportFileStack(Stack):
                         authorizer=authorizer,
                     )
 
+            # 4. Export the API Gateway ARN for other stacks
+            
+            # CfnOutput(
+            #     self,
+            #     id="APIGatewayImportArn",
+            #     value=f"arn:aws:apigateway:{self.region}::/restapis/{api.rest_api_id}",
+            #     export_name="APIGatewayImportArn",
+            # )
+            
             logger.info("APIGatewayImportFileStack created successfully")
 
         except Exception as err:
