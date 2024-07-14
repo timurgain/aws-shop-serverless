@@ -1,7 +1,6 @@
 import logging
 from typing import List, Tuple
 from aws_cdk import (
-    CfnOutput,
     Fn,
     Stack,
     aws_apigateway as apigateway,
@@ -41,6 +40,12 @@ class APIGatewayImportFileStack(Stack):
                 id="ImportAPI",
                 rest_api_name="Import API",
                 handler=default_lambda,
+                description="This service allows to import products to the shop",
+                default_cors_preflight_options={
+                    "allow_origins": apigateway.Cors.ALL_ORIGINS,
+                    "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+                    "allow_headers": apigateway.Cors.DEFAULT_HEADERS,
+                },
             )
 
             # 2. Create authorizer
@@ -52,7 +57,31 @@ class APIGatewayImportFileStack(Stack):
                 identity_source=apigateway.IdentitySource.header("Authorization"),
             )
 
-            # 3. Bind http methods with lamdas within APIGateway
+            # 3. Gateway response in case of unauthorized access
+
+            cors_error_headers = {
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE'",
+            }
+
+            api.add_gateway_response(
+                "UnauthorizedResponse",
+                type=apigateway.ResponseType.UNAUTHORIZED,
+                response_headers=cors_error_headers,
+                status_code="401",
+                templates={"application/json": '{"message": "Unauthorized"}'},
+            )
+
+            api.add_gateway_response(
+                "ForbiddenResponse",
+                type=apigateway.ResponseType.ACCESS_DENIED,
+                response_headers=cors_error_headers,
+                status_code="403",
+                templates={"application/json": '{"message": "Forbidden"}'},
+            )
+
+            # 4. Bind http methods with lamdas within APIGateway
 
             resources = {}
             for methods, url, lambda_function in method_url_lambdas:
@@ -74,15 +103,6 @@ class APIGatewayImportFileStack(Stack):
                         authorizer=authorizer,
                     )
 
-            # 4. Export the API Gateway ARN for other stacks
-            
-            # CfnOutput(
-            #     self,
-            #     id="APIGatewayImportArn",
-            #     value=f"arn:aws:apigateway:{self.region}::/restapis/{api.rest_api_id}",
-            #     export_name="APIGatewayImportArn",
-            # )
-            
             logger.info("APIGatewayImportFileStack created successfully")
 
         except Exception as err:
