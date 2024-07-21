@@ -32,7 +32,7 @@ import_service_stack = ImportShopProductsFileStack(
 
 urls = [
     (
-        ["GET", "OPTIONS", "PUT", "POST", "DELETE"],
+        ["GET", "PUT", "POST", "DELETE"],
         "import",
         import_service_stack.import_products_file,
     ),
